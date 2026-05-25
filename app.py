@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 import time
 import os
 import joblib
+import pytz  # <--- NUEVA LIBRERÍA PARA CONTROL DE ZONA HORARIA
 from datetime import datetime
 from streamlit_option_menu import option_menu
 
@@ -194,7 +195,6 @@ elif opcion == "Evaluación":
             contenedor_carga_interna.empty()
 
             # --- DEFINICIÓN MANUAL Y BLINDADA DEL ORDEN ---
-            # Forzamos las 7 variables exactas en el orden en que las entrenaste en Colab.
             orden_columnas = [
                 'pct_uso_credito', 
                 'puntaje_crediticio', 
@@ -215,7 +215,6 @@ elif opcion == "Evaluación":
                 'ingresos_mensuales': ingresos_mensuales
             }
 
-            # Construir el DataFrame ignorando lo que diga la metadata corrupta del pkl
             datos = pd.DataFrame([[valores_input[col] for col in orden_columnas]], columns=orden_columnas)
 
             # Escalar y Predecir
@@ -224,16 +223,12 @@ elif opcion == "Evaluación":
                 pred = modelo.predict(datos_esc)[0]
                 proba = modelo.predict_proba(datos_esc)[0]
             except Exception as error_escalador:
-                # Si tu archivo .pkl local viejo sigue pidiendo 8 columnas por culpa del conflicto de versión,
-                # este bloque añade los ceros fantasma automáticamente para salvar la ejecución.
                 datos['edad_cliente'] = 0
                 datos['n_hijos'] = 0
-                # Reordenamos según lo que pida ese escalador viejo
                 columnas_viejas = scaler.feature_names_in_.tolist() if hasattr(scaler, 'feature_names_in_') else orden_columnas + ['edad_cliente', 'n_hijos']
                 datos_viejos = datos[columnas_viejas]
                 datos_esc = scaler.transform(datos_viejos)
                 
-                # Al modelo solo le mandamos las 7 que sí corresponden
                 if datos_esc.shape[1] > 7:
                     datos_esc = datos_esc[:, :7]
                 pred = modelo.predict(datos_esc)[0]
@@ -243,9 +238,13 @@ elif opcion == "Evaluación":
             riesgo = mapa_riesgo[pred]
             confianza = round(proba[pred] * 100, 2)
 
+            # --- OBTENCIÓN DE LA HORA LOCAL DE COLOMBIA ---
+            zona_bogota = pytz.timezone('America/Bogota')
+            hora_colombia = datetime.now(zona_bogota).strftime("%Y-%m-%d %H:%M")
+
             # --- Almacenamiento en Historial Permanente ---
             nuevo_registro = pd.DataFrame([{
-                "fecha": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                "fecha": hora_colombia,  # <--- GUARDADO CON HORA EXACTA DE BOGOTÁ
                 "cedula": cedula.strip(),
                 "puntaje": puntaje_crediticio,
                 "ingresos": ingresos_mensuales,
@@ -346,10 +345,15 @@ elif opcion == "Historial":
             st.dataframe(df, use_container_width=True)
 
             csv = df.to_csv(index=False).encode("utf-8")
+            
+            # Formateamos la hora actual de Colombia también en el nombre del archivo descargable
+            zona_bogota = pytz.timezone('America/Bogota')
+            fecha_descarga = datetime.now(zona_bogota).strftime('%Y%m%d')
+            
             st.download_button(
                 label="⬇ Descargar Reporte CSV",
                 data=csv,
-                file_name=f"historial_completo_credito_{datetime.now().strftime('%Y%m%d')}.csv",
+                file_name=f"historial_completo_credito_{fecha_descarga}.csv",
                 mime="text/csv"
             )
         else:
