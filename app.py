@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 import time
 import os
 import joblib
-import pytz  # <--- NUEVA LIBRERÍA PARA CONTROL DE ZONA HORARIA
+import pytz
 from datetime import datetime
 from streamlit_option_menu import option_menu
 
@@ -78,7 +78,7 @@ try:
     contenedor_inicial.empty()
 except Exception as e:
     contenedor_inicial.empty()
-    st.error(f"❌ Error crítico al inicializar la inteligencia artificial: {e}")
+    st.error(f"Error crítico al inicializar la inteligencia artificial: {e}")
     st.stop()
 
 archivo_historial = "historial_clientes.csv"
@@ -244,7 +244,7 @@ elif opcion == "Evaluación":
 
             # --- Almacenamiento en Historial Permanente ---
             nuevo_registro = pd.DataFrame([{
-                "fecha": hora_colombia,  # <--- GUARDADO CON HORA EXACTA DE BOGOTÁ
+                "fecha": hora_colombia,
                 "cedula": cedula.strip(),
                 "puntaje": puntaje_crediticio,
                 "ingresos": ingresos_mensuales,
