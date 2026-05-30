@@ -1,6 +1,6 @@
 # 💳 Predicrédito — Sistema Predictivo de Riesgo Crediticio Automático
 
-Este repositorio aloja el código fuente completo de **Predicrédito**, una solución basada en Inteligencia Artificial y Machine Learning diseñada específicamente para la pre-aprobación automatizada y la clasificación del riesgo financiero en créditos vehiculares, tomando como caso de estudio la optimización de los procesos operativos de la entidad **Finanzauto** en la ciudad de Bogotá, Colombia.
+Este repositorio aloja el código fuente completo de **Predicrédito**, una solución basada en Inteligencia Artificial y Machine Learning diseñada específicamente para la pre-aprobación automatizada y la clasificación del riesgo financiero en créditos vehiculares, tomando como caso de estudio la optimización de los procesos operativos de la entidad de credito en la ciudad de Bogotá, Colombia.
 
 ---
 
@@ -80,7 +80,7 @@ La solución fue llevada a la web integrando la lógica analítica de datos en u
 ---
 
 ## ⚙️ 7. Explicabilidad, Reglas de Negocio e Integración del Sistema
-El sistema no se comporta como una "caja negra"; utiliza las predicciones probabilísticas para desencadenar lógicas personalizadas dentro del flujo operativo de Finanzauto:
+El sistema no se comporta como una "caja negra"; utiliza las predicciones probabilísticas para desencadenar lógicas personalizadas dentro del flujo operativo de la entidad crediticia:
 * **Validación de Identidad Obligatoria:** Exige la digitación del número de Cédula de Ciudadanía; si el campo está vacío, bloquea automáticamente los cálculos previniendo registros anónimos.
 * **Semáforo de Riesgo Dinámico:** Traduce la clase predicha en un componente visual semántico inmediato para el asesor: `Riesgo Bajo (Verde / Aprobación Directa)`, `Riesgo Medio (Amarillo / Requiere Co-deudor)` o `Riesgo Alto (Rojo / Rechazo Automático)`.
 * **Gráfico de Aguja Interactivo (*Gauge Chart*):** Extrae las probabilidades asociadas a la predicción usando `predict_proba()` y grafica de manera exacta el nivel de certeza con el que el modelo emitió el veredicto.
